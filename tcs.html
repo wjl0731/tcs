@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>贪吃蛇🐍</title>
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+    
+    body {
+        position: relative;
+        height: 100vh;
+        width: 100vw;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    canvas {
+        box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.3);
+    }
+</style>
+
+<body>
+    <canvas width="800px" height="800px" id="game">
+
+    </canvas>
+    <script>
+        let canvas = document.getElementById('game');
+        let ctx = canvas.getContext('2d');
+        let colors = ['#00FF00', '#FFFF00', '#FF0000', '#9370DB', '	#FFA500', '#FF34B3', '#00BFFF'] //所用到的颜色合集
+            // 上87,右68,下83,左65
+        let direction = 68,
+            timer = null, //每一帧动画
+            gameWidth = 800,
+            gameHeight = 800;
+        let snake = [{ //我是蛇
+            x: 60,
+            y: 60,
+            color: '#00FF00',
+        }, {
+            x: 80,
+            y: 60,
+            color: '#FFFF00',
+        }, {
+            x: 100,
+            y: 60,
+            color: '#FF0000',
+        }, ]
+
+        function drawBlock(x, y, color) { //画单个方块
+            ctx.fillStyle = color;
+            ctx.fillRect(x, y, 20, 20);
+        }
+
+        function drawMap() { //初始化地图
+            for (let i = 0; i < gameWidth / 20; i++) {
+                for (let j = 0; j < gameHeight / 20; j++) {
+                    ctx.fillStyle = "#F5F5F5";
+                    ctx.fillRect(i * 20, j * 20, 20, 20);
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.fillRect(i * 20 - 1, j * 20 - 1, 18, 18)
+                }
+            }
+        }
+
+        function drawSnake() { //画蛇
+            snake.forEach((item, index) => {
+                drawBlock(item.x, item.y, item.color)
+            })
+        }
+
+        function animation() { //蛇动起来
+            function snakeChange() { //蛇数组的改变
+                snake.push(Object.assign({}, snake[snake.length - 1]));
+                for (let i = snake.length - 1; i > 0; i--) {
+                    snake[i].color = snake[i - 1].color
+                }
+                snake.shift()
+            }
+            switch (direction) {
+                case 87: //上
+                    snakeChange()
+                    snake[snake.length - 1].y -= 20
+                    break;
+                case 68: //右
+                    snakeChange()
+                    snake[snake.length - 1].x += 20
+                    break;
+                case 83: //下
+                    snakeChange()
+                    snake[snake.length - 1].y += 20
+                    break;
+                case 65: //左
+                    snakeChange()
+                    snake[snake.length - 1].x -= 20
+                    break;
+            }
+        }
+        timer = setInterval(() => {
+            ctx.clearRect(0, 0, gameWidth, gameHeight);
+            drawMap()
+            drawSnake()
+            animation()
+        }, 300)
+        drawMap()
+        drawSnake()
+        animation()
+
+        document.onkeydown = (e) => {
+            direction = e.keyCode;
+        }
+    </script>
+</body>
+
+</html>
